@@ -1,0 +1,13 @@
+This module involved the use of directories, and paths, focusing on ways to set the working directory and build new directories and paths to desired locations within.
+getwd() will tell the user what the current working directory(folder) is. R studio will search and dump off new files here.
+ls() provides all the objects in the local workspace
+list.files() lists all the files in the current directory
+file.exists() gives a T/F if the file is in the directory. good for loops
+file.info gives info about the file in question
+file.rename("file_to_change","New_name") renames files
+file.copy("file_to_copy","New_file") makes a copy of a file
+file.path() sets the path to the selected directory or file
+dir.create("path", showWarnings = TRUE, recursive = FALSE) creates a directory in the given path. recursive needs to be true in order to make a directory within a directory.
+conisider making a variable that is the old directory when starting work.
+
+
