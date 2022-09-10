@@ -1,0 +1,30 @@
+Module: Missing Numbers
+
+Module 3 involved the use of sequences and Numbers
+the : operator causes a sequence of numbers to be made between the lowest and highest numbers increasing by 1
+can decrease if the first number is higher than the second
+seq() function (sequence) allows for similar results but with more possible variations.
+can choose step size by setting variable "by =x"
+"length=x" sets the number of steps between two numbers
+rep(x, times=y) (replicate) will replicate a sequence a set number of times 
+
+Module 4: Vectors
+
+Two types of vectors: atomic = one data type, list = multiple data types
+logical operatos can read an entire vector and give outputs
+| is still logical "or" & is logical "and"
+paste() can collapse characters into a single element by designating the collapse variable = " " (the space is important)
+paste() can join multiple character vectors together
+
+Module 5: Missing Values
+
+NA in an object counts as a missing number
+is.na() gives back a logical variable to find NA in an object
+NA isn't a value and therefore has difficulty with logical operators
+NaN means not a number, returns for 0/0 Inf-Inf, etc.
+
+Module 6: Subsetting Vectors
+
+placing square brackets x[] allows the user to select specific portions of a vector
+logical operators can be used to filter out wanted elements (as long as na isnt present)
+can filter out Na by using x[!is.na(x)]
