@@ -28,3 +28,36 @@ Module 6: Subsetting Vectors
 placing square brackets x[] allows the user to select specific portions of a vector
 logical operators can be used to filter out wanted elements (as long as na isnt present)
 can filter out Na by using x[!is.na(x)]
+
+Module 7:Matrices
+
+matrices and data frames are used to store tabular data
+Matrices contain the same data type
+data frames can contain differing data types
+dim() gives dimensions of object rows x columns
+length() gives length of a vector
+dim() can assign dimensions to an object
+
+Module 8: Logic
+
+Logical operations work with boolean outputs TRUE and FALSE
+similar to MatLab where < > == and <= >= are relevant
+! gives the alternate boolean output
+| is Or, & is and
+&& evaluates first element, || evaluates first element 
+
+Module 9: Functions
+
+functions are small building blocks of data meant to repeatedly take inputs and give outputs.
+Functions can use other functions as inputs
+... allows for unlimited inputs within a given argument.
+
+Module 12: Looking at data
+ls() lists variables in the workspace
+class() gives the class of a given variable
+dim() can give the number of rows and cols of given input
+nrow() ncol() gives number of rows or columns 
+object.size() gives memory size of data frame
+head() gives first 6 rows
+tail() gives last 6 rows
+str() gives most comprehensive information of given data. Often best choice to learn about given data
