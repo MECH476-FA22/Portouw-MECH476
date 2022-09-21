@@ -180,6 +180,27 @@ $$
 
 ```{r convert-ozone}
 # create new variable of ug/m3 from ppm and overwrite dataset
+ozone_ppm <- fc_ozone$ozone_ppm_hourly
+# Molecular weight of ozone g/mol
+mol_wt_oz <- 47.998
+#estimated temp in Fort Collins, CO, Celsius
+C <- 10
+#Celsius to Kelvin Temp conversion:
+C_to_K <- 273.15 + C
+#estimated atmospheric pressure in Fort Collins,CO in #mmhg
+air_pressure <- 637
+#universal gas constant
+R <- 22.4136
+
+#final equation:
+ozoneugm3 <- function(ozone_ppm){
+  ozoneugm <- 1000*(((ozone_ppm)*(mol_wt_oz)*(C_to_K)*air_pressure)/(R*(C_to_K+C)*air_pressure))
+  return(ozoneugm)
+}
+dplyr::mutate(.data = fc_ozone, ozone_ppm_hourly = ozoneugm3(ozone_ppm))%>%
+  rename(ozone_umg3 = ozone_ppm_hourly)
+
+  
 
 ```
 
