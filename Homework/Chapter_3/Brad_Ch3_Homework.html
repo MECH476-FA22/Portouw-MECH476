@@ -366,7 +366,7 @@ pre code {
 R</h1>
 <h3 class="subtitle">Chapter 3 Homework: Fort Collins Ozone</h3>
 <h4 class="author">Brad Portouw</h4>
-<h4 class="date">19 September, 2022</h4>
+<h4 class="date">20 September, 2022</h4>
 
 </div>
 
@@ -497,12 +497,21 @@ Kelvin value} + \text{temperature})(\text{atmospheric pressure})\Big)}
 knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = &quot;../figs/&quot;,
                       echo = FALSE, warning = FALSE, message = FALSE)
 # do you need to install each R package?
-
+#not sure, but it would be possible to check and see #if the package is present in the user&#39;s workspace, #and if not, install it if necessary. 
+#install.packages(&#39;tidyverse&#39;)
 # load packages for current R session
 library(readr)
 library(dplyr)
 library(tidyverse)
 # ozone: import, select, drop missing observations, rename
+#Note: Working directory is the Homework Folder. 
+fc_ozone &lt;- readr::read_csv(&quot;../../Data/ftc_o3.csv&quot;)%&gt;%
+  dplyr::select(sample_measurement,
+                datetime)%&gt;%
+  dplyr::filter(!is.na(sample_measurement),
+                       !is.na(datetime))%&gt;%
+  dplyr::rename(ozone_ppm_hourly = sample_measurement)
+
  # use relative pathname
  # select needed variables 
  # drop missing observations

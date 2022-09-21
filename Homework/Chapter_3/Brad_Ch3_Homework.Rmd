@@ -47,7 +47,8 @@ car every year.
 
 ```{r load-packages}
 # do you need to install each R package?
-
+#not sure, but it would be possible to check and see #if the package is present in the user's workspace, #and if not, install it if necessary. 
+#install.packages('tidyverse')
 # load packages for current R session
 library(readr)
 library(dplyr)
@@ -78,6 +79,14 @@ variable name (e.g., `ozone_ppm_hourly`).
 
 ```{r import-data}
 # ozone: import, select, drop missing observations, rename
+#Note: Working directory is the Homework Folder. 
+fc_ozone <- readr::read_csv("../../Data/ftc_o3.csv")%>%
+  dplyr::select(sample_measurement,
+                datetime)%>%
+  dplyr::filter(!is.na(sample_measurement),
+                       !is.na(datetime))%>%
+  dplyr::rename(ozone_ppm_hourly = sample_measurement)
+
  # use relative pathname
  # select needed variables 
  # drop missing observations
