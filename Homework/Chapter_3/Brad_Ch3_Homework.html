@@ -366,7 +366,7 @@ pre code {
 R</h1>
 <h3 class="subtitle">Chapter 3 Homework: Fort Collins Ozone</h3>
 <h4 class="author">Brad Portouw</h4>
-<h4 class="date">20 September, 2022</h4>
+<h4 class="date">21 September, 2022</h4>
 
 </div>
 
@@ -437,6 +437,9 @@ file imported and was manipulated properly. How many observations were
 dropped due to missing values? <em>Hint</em>: Only consider the
 <code>ozone_ppm</code> variable; there were no missing values for
 <code>datetime</code>.</p>
+<pre><code>## tibble [16,914 × 2] (S3: tbl_df/tbl/data.frame)
+##  $ ozone_ppm_hourly: num [1:16914] 0.017 0.017 0.017 0.017 0.015 0.017 0.028 0.03 0.036 0.036 ...
+##  $ datetime        : POSIXct[1:16914], format: &quot;2019-01-01 07:00:00&quot; &quot;2019-01-01 08:00:00&quot; ...</code></pre>
 </div>
 </div>
 <div id="question-2-extract-and-compare" class="section level1">
@@ -450,6 +453,8 @@ object.</p>
 <p>Now, complete the same process for the bottom ten ozone values.</p>
 <p>Do the highest and lowest values tend to occur at certain times of
 the day?</p>
+<p>The highest values seem to occur around 8 to 10 pm, while the lowest
+values occur around 7-11 am.</p>
 </div>
 <div id="question-3-maximum-and-minimum" class="section level1">
 <h1>Question 3: Maximum and Minimum</h1>
@@ -517,12 +522,18 @@ fc_ozone &lt;- readr::read_csv(&quot;../../Data/ftc_o3.csv&quot;)%&gt;%
  # drop missing observations
  # rename main variable
 # examine tibble
-
-# calculate number of missing observations 
+str(fc_ozone)
+# calculate number of missing observations
+NA_removed &lt;- nrow(readr::read_csv(&quot;../../Data/ftc_o3.csv&quot;))-
+  nrow(fc_ozone)
 # extract top ten ozone values and save them to df
-
+top_oz_hourly &lt;- dplyr::slice_max(.data = fc_ozone,
+                                  order_by = ozone_ppm_hourly,
+                                  n = 10)
 # extract bottom ten ozone values and save them to df
-
+bot_oz_hourly &lt;- dplyr::slice_min(.data= fc_ozone,
+                                  ozone_ppm_hourly,
+                                  n = 10)
 # extract date/time of highest ozone concentration
 
 # extract date/time of lowest ozone concentration

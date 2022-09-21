@@ -102,8 +102,10 @@ were no missing values for `datetime`.
 
 ```{r missing-data}
 # examine tibble
-
-# calculate number of missing observations 
+str(fc_ozone)
+# calculate number of missing observations
+NA_removed <- nrow(readr::read_csv("../../Data/ftc_o3.csv"))-
+  nrow(fc_ozone)
 ```
 
 # Question 2: Extract and Compare
@@ -116,17 +118,24 @@ to a separate object.
 
 ```{r extract-max}
 # extract top ten ozone values and save them to df
-
+top_oz_hourly <- dplyr::slice_max(.data = fc_ozone,
+                                  order_by = ozone_ppm_hourly,
+                                  n = 10)
 ```
 
 Now, complete the same process for the bottom ten ozone values.
 
 ```{r extract-min}
 # extract bottom ten ozone values and save them to df
-
+bot_oz_hourly <- dplyr::slice_min(.data= fc_ozone,
+                                  ozone_ppm_hourly,
+                                  n = 10)
 ```
 
 Do the highest and lowest values tend to occur at certain times of the day? 
+
+The highest values seem to occur around 8 to 10 pm,
+while the lowest values occur around 7-11 am.
 
 # Question 3: Maximum and Minimum
 
