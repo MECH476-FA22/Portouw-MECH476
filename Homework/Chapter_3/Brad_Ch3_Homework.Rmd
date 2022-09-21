@@ -144,8 +144,9 @@ occur? The lowest?
 
 ```{r high-low}
 # extract date/time of highest ozone concentration
-
+hi_oz_time <- top_oz_hourly[1,2]
 # extract date/time of lowest ozone concentration
+low_oz_time <- bot_oz_hourly[1,2]
 ```
 
 # Question 4: Mutate

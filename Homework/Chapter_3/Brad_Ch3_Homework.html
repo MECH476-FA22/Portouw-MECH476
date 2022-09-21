@@ -535,8 +535,9 @@ bot_oz_hourly &lt;- dplyr::slice_min(.data= fc_ozone,
                                   ozone_ppm_hourly,
                                   n = 10)
 # extract date/time of highest ozone concentration
-
+hi_oz_time &lt;- top_oz_hourly[1,2]
 # extract date/time of lowest ozone concentration
+low_oz_time &lt;- bot_oz_hourly[1,2]
 # create new variable of ug/m3 from ppm and overwrite dataset</code></pre>
 </div>
 
