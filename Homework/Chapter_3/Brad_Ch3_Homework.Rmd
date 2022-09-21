@@ -79,7 +79,8 @@ variable name (e.g., `ozone_ppm_hourly`).
 
 ```{r import-data}
 # ozone: import, select, drop missing observations, rename
-#Note: Working directory is the Homework Folder. 
+#Note: Working directory is /Portouw-MECH476/Homework/Chapter_3. 
+#csv of interest is in #/Portouw-MECH476/Data/ftc_o3.csv
 fc_ozone <- readr::read_csv("../../Data/ftc_o3.csv")%>%
   dplyr::select(sample_measurement,
                 datetime)%>%

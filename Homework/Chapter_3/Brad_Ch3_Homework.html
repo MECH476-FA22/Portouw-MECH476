@@ -523,7 +523,8 @@ library(readr)
 library(dplyr)
 library(tidyverse)
 # ozone: import, select, drop missing observations, rename
-#Note: Working directory is the Homework Folder. 
+#Note: Working directory is /Portouw-MECH476/Homework/Chapter_3. 
+#csv of interest is in #/Portouw-MECH476/Data/ftc_o3.csv
 fc_ozone &lt;- readr::read_csv(&quot;../../Data/ftc_o3.csv&quot;)%&gt;%
   dplyr::select(sample_measurement,
                 datetime)%&gt;%
