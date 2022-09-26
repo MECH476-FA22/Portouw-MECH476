@@ -1,9 +1,9 @@
 ---
 title: 'MECH476: Engineering Data Analysis in R'
 subtitle: 'Chapter 4 Homework: Visualizing Ozone Data' 
-author: 'Student Name'
+author: 'Brad Portouw'
 date: '`r format(Sys.time(), "%d %B, %Y")`'
-output: pdf_document
+output: 'html_document'
 ---
 
 *Note*: If you haven't installed $LaTex$, change the output mode in the above
@@ -45,6 +45,10 @@ the pathnames, if needed.
 
 ```{r load-packages}
 # load packages for current R session
+library(readr)
+library(dplyr)
+library(tidyverse)
+library(ggplot2)
 ```
 
 ## Import, select, and clean data
@@ -58,6 +62,12 @@ the output as a `tibble` (*not in that particular order*).
 
 ```{r import-data}
 # ozone: import, select, drop missing observations, rename
+fc_ozone <- readr::read_csv("../../Data/ftc_o3.csv")%>%
+  dplyr::select(sample_measurement,
+                datetime)%>%
+  dplyr::filter(!is.na(sample_measurement),
+                       !is.na(datetime))%>%
+  dplyr::rename(ozone_ppm = sample_measurement)
 ```
 
 ## Examine Data
@@ -67,6 +77,7 @@ imported and was manipulated properly.
 
 ```{r missing-data}
 # examine dataframe object 
+fc_ozone
 ```
 
 # Question 1: `ggplot2` time series
@@ -77,6 +88,8 @@ ink-to-information ratio. Ugly plots are okay when you are just exploring data.
 
 ```{r ozone-time}
 # create basic time series using ggplot2 package
+ggplot(data = fc_ozone, aes(x= datetime, y= ozone_ppm)) +
+  geom_point()
 ```
 
 # Question 2: Base R equivalent
@@ -85,6 +98,13 @@ For comparison, what function could you use to create a time series of these
 data in base R? How does the syntax of this function compare to that of
 `ggplot()`?
 
+Below is a plot using the plot() function provided in base r. the basic formating is much worse, but it uses basic vectors for data rather than utilizing columns from a particular data frame. 
+
+```{r ozone-time-base-r}
+X <- fc_ozone$datetime
+Y <- fc_ozone$ozone_ppm
+plot(X,Y)
+```
 # Question 3: `ggplot` object
 
 Excluding the geom, assign the plot from Question 1 as a `ggplot` object with 
@@ -92,6 +112,7 @@ a descriptive name.
 
 ```{r ozone-object}
 # create base layer of ozone time series (no geom) and save to object
+ozone_ppm_vs_time <- ggplot(data = fc_ozone, aes(x= datetime, y= ozone_ppm))
 ```
 
 # Question 4: `geom`
@@ -102,6 +123,7 @@ in the `ggplot` object in Question 3.
 
 ```{r ozone-geom}
 # add layer to ggplot object
+ozone_ppm_vs_time + geom_point()
 ```
 
 # Question 5: `ggplot` layers
@@ -109,6 +131,7 @@ in the `ggplot` object in Question 3.
 Call and examine object within the R Markdown, Console, or using View. How
 many layers does this `ggplot` object contain? Why?
 
+Observing ozone_ppm_vs_time there are zero layers.If the geom is added during the creation of the ggplot, like in question 1 there is 1 layer. The + operator acts much like a pipe to another function, however the syntax used in question 4 must have added the outputs of the two functions together. geom_point() likely has a workaround where it will alter the plot while technically not being an ongoing change to the object. 
 # Question 6: theme
 
 Next, add the `ggplot2` theme  of your choice to the `ggplot` object with
@@ -116,6 +139,10 @@ Next, add the `ggplot2` theme  of your choice to the `ggplot` object with
 
 ```{r ozone-theme}
 # add theme to ggplot object
+ozone_ppm_vs_time +
+  geom_point() +
+  theme_classic()
+ozone_ppm_vs_time
 ```
 
 # Question 7: additions
@@ -135,6 +162,10 @@ Using this technique and the same additive approach (`ggplot_object + ... + titl
 
 ```{r ozone-time-label}
 # add title and axis labels to time series
+ozone_ppm_vs_time +
+  ggtitle(ozone_labels$title) +
+  ylab(ozone_labels$y) +
+  xlab('Date of Measurement')
 ```
 
 # Question 7: granularity  
