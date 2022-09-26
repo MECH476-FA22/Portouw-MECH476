@@ -163,8 +163,9 @@ Using this technique and the same additive approach (`ggplot_object + ... + titl
 ```{r ozone-time-label}
 # add title and axis labels to time series
 ozone_ppm_vs_time +
-  ggtitle(ozone_labels$title) +
-  ylab(ozone_labels$y) +
+  geom_point() +
+  ggtitle("Hourly Ozone Measurements in Fort Collins, CO") +
+  ylab("Ozone Concentration (ppm)") +
   xlab('Date of Measurement')
 ```
 
@@ -183,14 +184,22 @@ ozone concentration measurement on the y-axis. Remember to add the relevant
 
 ```{r high-ozone-plot}
 # filter data to ozone concentration measurements exceeding 0.070 ppm 
-
+fc_ozone_high <- dplyr::filter(.data=fc_ozone, ozone_ppm > 0.070)
 # time series of high ozone measurements
+high_ozone_ppm_vs_time <- ggplot(data = fc_ozone_high, aes(x= datetime, y=ozone_ppm))+
+  geom_point() +
+  ggtitle("Hourly Ozone Measurements in Fort Collins, CO") +
+  ylab("Ozone Concentration (ppm)") +
+  xlab('Date of Measurement')
+high_ozone_ppm_vs_time
 ```
 
 # Question 8: seasonality
 
 Based on the time series, do you see any seasonal pattern for higher levels
 of ozone? Describe what you see.
+
+Winter sees less ozone ppm versus summer. The plot that only includes ppm over 0.070 only contains values between the months of June to September which are some of the hottest months in Fort Collins.
 
 # Question 9: proportion
 
