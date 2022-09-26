@@ -531,7 +531,12 @@ useful, so it’s good to be aware of them. Which theme would be
 appropriate for your own research or senior project, and why? How would
 you use it? Briefly describe your data and why the extension would
 improve the data visualization and communication.</p>
-<div style="page-break-after: always;"></div>
+<p>I’m currently a junior and do not have a senior project, however it
+is clear that these extensions provide ways of conveying information in
+more practical and exciting ways. differing colors, motions, and figures
+can bring attention to one’s data in order to more clearly convey what
+was observed during testing. The whole goal of making plots is to convey
+information, and having more options can only be helpful </p>
 </div>
 <div id="appendix" class="section level1">
 <h1>Appendix</h1>
@@ -586,7 +591,8 @@ high_ozone_ppm_vs_time &lt;- ggplot(data = fc_ozone_high, aes(x= datetime, y=ozo
   ylab(&quot;Ozone Concentration (ppm)&quot;) +
   xlab(&#39;Date of Measurement&#39;)
 high_ozone_ppm_vs_time
-# calculate proportion of ozone measurements that exceed 0.070 ppm </code></pre>
+# calculate proportion of ozone measurements that exceed 0.070 ppm 
+percent_exceed0.070 &lt;- (length(fc_ozone_high$ozone_ppm)/length(fc_ozone$ozone_ppm))*100</code></pre>
 </div>
 
 
