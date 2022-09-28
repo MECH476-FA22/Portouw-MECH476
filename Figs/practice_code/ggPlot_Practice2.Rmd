@@ -1,0 +1,110 @@
+---
+title: "ggPlot Practice2"
+author: "Brad_Portouw"
+date: "2022-09-21"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+
+mpg <- mpg
+```
+
+## R Markdown
+follow along on web page https://smogdr.github.io/edar_coursebook/dataviz.html
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r mpg_plot}
+# quantitative summary in pipe
+mpg %>% 
+  dplyr::filter(year == 2008) %>%
+  dplyr::group_by(class) %>%
+  dplyr::tally() %>% 
+  dplyr::ungroup()
+
+# load required R packages
+library(dplyr) # for data wrangling and manipulation
+library(ggplot2) # for data visualization
+## alternatively, use `library(tidyverse)`, if you will need multiple packages
+
+ggplot2::ggplot() +
+  geom_point(data = dplyr::filter(mpg, year == 2008), # filter data
+             aes(x = hwy, y = cty, color = class)) # assign x, y, and color
+getwd()
+
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r mpg_plot2}
+# call to ggplot, note that data and aesthetics are called in first geom layer
+mpg %>%
+  filter(year == 2008) %>%
+  slice_max(order_by = hwy)
+ggplot2::ggplot() +
+  # first geom layer (jitter)
+  geom_jitter(data = dplyr::filter(mpg, year == 2008),
+             aes(x = hwy, y = cty, color = class),
+             width = 0.4,
+             alpha = 0.6,
+             size = 2) +
+  coord_fixed(xlim = c(0,40),ylim = c(0,40)) + # set aspect ratio to be similar.
+  xlim(5,40)+
+  ylim(5,40)+
+  geom_abline(intercept = 0, slope = 1)+
+  xlab("Highway Fuel Econ, mi/gal") +
+  ylab("City Fuel Econ, mi/gal")+
+  theme_gray()
+
+
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+##plot 2
+```{r mpg_subset}
+mpg_subset <- mpg %>%
+  dplyr::filter(class == "suv", year == 2008)%>%
+  dplyr::group_by(manufacturer) %>%
+  dplyr::summarise(hwy_mean = mean(hwy), 
+                   displ_mean = mean(displ))
+
+# call to ggplot, note that data and aesthetics are called in each geom layer
+p1 <- ggplot() +
+  # first layer - note the main dataframe was called
+  geom_point(data = filter(mpg, class == "suv" & year == 2008),
+           aes(x = manufacturer, 
+               y = hwy, 
+               color = displ),
+           size = 2) +
+  # second layer - note the subset dataframe was called 
+  geom_errorbar(data = mpg_subset,
+             aes(x = manufacturer,
+                 ymin = hwy_mean,
+                 ymax = hwy_mean,
+                 color = displ_mean),
+             size = 1) +
+  # customize plot labels
+  labs(title = "Fuel Economy for 2008 SUVs by Manufacturer and Engine Displacement",
+       color = "Disp (L)") +
+  ylab("highway fuel economy (miles/gal)") +
+  # add a fancy color scale
+  scale_colour_stepsn(colours = hcl.colors(n=5, palette = "plasma")) +
+  # adopt a theme without a gray background
+  theme_classic() +
+  # enclose the plot on all sides with a black line
+  theme(panel.background = element_rect(color = "black",
+                                        size = 1))
+p1
+ggplot2::ggsave("mpg-bar.png",
+       plot = p1,
+       dpi = 150,
+       device = png(),
+       width = 20,
+       units = "cm")
+```

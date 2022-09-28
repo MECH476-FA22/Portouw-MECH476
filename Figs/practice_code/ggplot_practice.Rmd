@@ -1,0 +1,55 @@
+---
+title: "ggplot_practice"
+author: "Brad_Portouw"
+date: "2022-09-19"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+```
+
+## Plots
+
+
+
+```{r mpg}
+mpg <- mpg
+
+# use ggplot() to map the data and a single aesthetic (variable = class)
+ggplot(data = mpg, aes(x = class,
+                       fill = drv)) + 
+  geom_bar() # call to a specific geom to plot the mapped data
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r data, explore}
+mpg %>%
+  dplyr::filter(class=="compact") %>%
+  dplyr::filter(drv =="4")
+
+ggplot(data = mpg) +
+geom_bar(aes(x = class, fill = drv))
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+```{r cty_hwy_plot}
+ggplot(data=mpg) +
+  geom_point(aes(
+    x = cty,
+    y = hwy,
+    shape = drv),
+    color = "green") +
+  ggtitle("City vs. Highway Fuel Economy, kinda by drivetrain") +
+  xlab("City Fuel Economy miles/gal") +
+  ylab("Highway Fuel Economy Miles/Gal")
+xlim(0,40)
+ylim(0,50)
+    # shape = 23
+    # color = "green"
+```
