@@ -1,0 +1,170 @@
+---
+title: 'MECH476: Engineering Data Analysis in R'
+subtitle: 'Chapter 6 Homework: Strings, Dates, and Tidying' 
+author: 'Brad Portouw'
+date: '`r format(Sys.time(), "%d %B, %Y")`'
+output: pdf_document
+---
+
+```{r global-options, include=FALSE}
+# set global options for figures, code, warnings, and messages
+knitr::opts_chunk$set(fig.width=6, fig.height=4, fig.path="../figs/",
+                      echo=FALSE, warning=FALSE, message=FALSE)
+```
+
+# Chapter 6 Homework
+
+For this homework assignment, you will use data from Twitter that include
+tweets (2011 to 2017) from Colorado senators, which can be downloaded from Canvas.
+Just FYI---some tweets were cut off before Twitter's character limit; 
+just work with the data you have. The original data are from
+[FiveThirtyEight](https://github.com/fivethirtyeight/data/tree/master/twitter-ratio).
+
+When a question asks you to make a plot, remember to set a theme, title, 
+subtitle, labels, colors, etc. It is up to you how to personalize your plots, 
+but put in some effort and think about making the plotting approach consistent 
+throughout the document. For example, you could use the same theme for all
+plots. I also like to use the subtitle as a place for the main summary for the
+viewer.
+
+\newpage
+
+## Question 1: Hashtags
+
+Within a pipeline using the Colorado-only tweet data, select `text` variable 
+and use `stringr::str_extract_all()` with a pattern of `"#(\\d|\\w)+"` to
+extract all of the hashtags from the tweets. This will return a list with one
+element. How many hashtags were used by Colorado senators?
+
+```{r hashtags}
+# wildfire hashtag list
+
+library("tidyverse")
+library("lubridate")
+# Create raw data frame for use later if needed
+co_tweets <- readr::read_csv("../../Data/senators_co.csv")
+
+# read co_tweets data frame, then select the text from the tweets, then extract all hashtags. 
+co_hashtag <- co_tweets %>%
+  dplyr::select('text') %>%
+  stringr::str_extract_all(pattern ="#(\\d|\\w)+")
+```
+#Looking at co_tweets there were 2569 tweets with hashtags in them. 
+
+## Question 2: Fires
+
+Colorado is on fire right now and has experienced many wildfires over the years.
+Let's examine senators' tweet activity related to wildfires based on hashtags.
+Using the character vector of hashtags you extracted in Question 1, search for
+the hashtags that include "fire" or "wildfire". How many hashtags included
+"fire"? How many included "wildfire"?
+
+```{r hashtag-fire}
+#string of patterns for str_detect to use
+fire_keywords = c("fire","Fire","wildfire","Wildfire")
+
+fire_mentions <- stringr::str_detect(co_hashtag,fire_keywords)%>%
+  sum()%>%
+  print()
+# 3 hashtags from senators either include fire or wildfire
+
+#how many specifically mention fire?
+f <- c("fire","Fire")
+fire <- stringr::str_detect(co_hashtag,f)%>%
+  sum()%>%
+  print()
+
+# fire suggests that 2 tweets contain a hashtag with fire in the text
+wf <- c("wildfire","Wildfire")
+wildfire <- stringr::str_detect(co_hashtag,wf)%>%
+  sum()%>%
+  print()
+# while wildfire shows that there is one tweet with wildfire in the text.
+```
+
+## Question 3: Wildfires 
+
+Now, let's look at general tweets concerning wildfires. First, subset the data
+to a dataframe that includes tweets containing the word "wildfire" and their 
+corresponding timestamp and user. Specifically, (a) select `text`, `date`, and
+`user` and (b) filter to text strings that include the word "wildfire" using
+`dplyr::filter()` and `stringr::str_detect()`.
+
+```{r wildfire}
+# filter to tweets concerning wildfires
+fire_tweets <- dplyr::select(.data = co_tweets,
+                             created_at,
+                             text,
+                             user)
+fire_tweets <- dplyr::filter(.data= fire_tweets, stringr::str_detect(fire_tweets$text,"wildfire"))
+
+```
+
+## Question 4: Senators
+
+Which Colorado senator tweets more about wildfires? 
+
+```{r wildfire-senator}
+# number of wildfire tweets by senator
+tweets_by_sen <- fire_tweets %>%
+  dplyr::group_by(user)%>%
+  dplyr::tally()
+#looking at the tweets_by_sen dataframe, senator Bennet had more tweets with the word wildfire (20), than senator Gardner (13)
+
+```
+
+## Question 5: Timing
+
+Using the same `wildfires` dataframe, create a summary table that shows the 
+number of tweets containing the word "wildfire" by year (2011-2017). Which year
+has the most tweets about wildfires? Why might this be the case? (Hint: Think
+about what happened in the previous year.)
+
+```{r wildfire-timing}
+# number of wildfire tweets by year 
+class(fire_tweets$created_at)
+# dates given are character strings, need to convert to date variable.
+fire_tweets_year<- mdy_hm(fire_tweets$created_at)%>%
+  year()
+
+fire_tweets$created_at <- fire_tweets_year
+
+years_tweets <- fire_tweets
+
+table(years_tweets$created_at)
+#fire_tweets %>% dplyr::tally(created_at)
+
+
+
+
+
+```
+
+\newpage
+
+## Question 6: Monthly tweets
+
+Create a bar chart that answers the question: Are Colorado senators more active
+at a certain time of year? Hints: Convert `month` to a factor. Fill by `user`.
+
+```{r tweet-count-month}
+# create plot of tweets by month and user
+```
+
+\newpage
+
+## Question 7: Hourly tweets
+
+Create a histogram of tweets by hour of day to visualize when our senators are
+tweeting. 
+
+```{r tweet-count-hour}
+# create plot of cumulative hourly tweets by senator
+```
+
+\newpage
+
+# Appendix
+
+```{r show_code, ref.label = knitr::all_labels(), echo = TRUE, eval = FALSE}
+```
