@@ -1,0 +1,130 @@
+[ ]- set of specific coordinates from a vector or data set [row(s), Columns(s)]
+#-comments, need to start each new line with a # to make multi line comments.
+? - if placed in front of a function without brackets opens help window
+<- - "gets arrow" assigns value on the right to the object on the left (not the same as =)
+c - concantenate or to place things into a vector or data set
+: - operator that causes a vector of numbers to be created between the left value and the right values increasing by 1. If first number is greater than the second, decreases by 1 instead.
+Logical operators: ==  !=  &  | - boolean expressions that return true or false
+== - equals, checks to see if arguments outputs are identical, if so runs TRUE, if not gives FALSE
+!= - not equals runs true if arguments are not equal to one another. 
+& - checks to see if both arguments are TRUE
+| - checks to see if either argument is TRUE
+Directory abbreviations: ~  .  ..  ../..
+~ - reference the home directory
+. - reference the current working directory
+.. - check one directory up from the current working directory
+../.. - two directories up from the wd. can repeat as many times as necessary to keep going up.
+%>% - pipe operator takes the object on the left side and places it into the first argument of the following funciton. Note: can be repeated, because piping sends the data frame from the previous step to the next function.
+getwd - will show the current working directory as a string
+sessionInfo - returns R version along with OS and attached or loaded packages.
+print - prints argument given by a function into the console or other space. Often a part of other functions to show the concluding argument. 
+paste - concatenates multiple character vectors together into one vector. can designate a spacing between, with sep = "" " " or "," etc.
+paste0 - paste but assumes sep = "", or no spaces
+class - returns the class of object in quesiton.
+length - returns the length of an object. If the assingment operator is used such as length(x) <- 5, the old vector changes its length to match the new value, either by dropping values or adding NA's to the new spaces.
+sum - add any number of numeric, complex, or logical vectors. optional argument na.rm = False, will not remove NA's in data sets, True will remove them. False by defualt.
+tibble - creates a data frame with the format: 
+object <- tibble([1st column name] =  [1st column content], etc)
+library - load a package of functions into the current r session. Make sure to put in quotes ""
+install.package - Find package on the internet and install it into r's database for use later.
+dim - gives the rows x columns of object. if dim(x) <- c(y,z), makes x into matrix of dimensions y,z. 
+nrow - returns the number of rows in x. as a data frame or matirx
+ncol - returns the number of columns in the dataframe/matrix x.
+str - internal "str"ucture of an object returns data types of each column and the total size and object type. similar to head(), but with more information 
+summary - summary gives more statistically relevant information on each column's data than str does, but takes up more space. 
+slice - subset rows much like filter, but with index locations (interger). Allows for selecting, removing and duplicaing rows.
+Consider: slice_head(), slice_tail(), slice_sample(), slice_min(), slice_max()
+select - select variables in a data frame, based upon their name, or use functions like is.numeric to select variables depending upon their properties. 
+head - gives the first 6 elements of each column
+tail  - gives the last 6 elements of each column
+vignette - get a large help file for a certain package
+glimpse - similar to print, but shows each column in a data frame descending so each column name can be read.
+mutate - add, subtract, or change columns. 
+rename - rename columns of a data frame.
+select - only return desired columns. can either return a few named columns, or remove only a few columns with the - operatior. 
+filter - choose rows that fulfill the set logical expression. 
+slice
+slice_max - returns rows with highest values
+arrange - arrange rows of data by values of selected columns. 
+read_csv - reads a flat file of values separated by the delimiter ,
+read_delim  - can read any dilimiter file, but the delimiter needs to be specified. 
+read_fwf - read a fixed width file. needs to know the width of every column however. 
+optional readr arguments: skip, col_types, col_names, n_max
+list.files - creates a character vector of the names of files and directories within a given directory. path= "." is optional argument starts with working directory
+unique - return vector data frame, or array of element x, with duplicates removed.
+is.na - indicates which elements are missing (NA) can use <- to cause element to be NA
+citation - creates citation of R script and packages given to the function. check optional arguments.
+colnames - returns a character string of all column names in a data frame. 
+
+ggplot
+aes
+geom_bar
+geom_line
+geom_point
+geom_histogram
+geom_boxplot
+geom_jitter
+stat_ecdf
+acf
+pacf
+fill =
+color =
+shape =
+alpha = 
+xlab
+ylab
+labs
+xlim
+ylim
+scale_x_log10
+scale_y_log10
+ggtitle
+ggsave
+group_by
+tally
+count
+summarise
+theme_bw
+min
+max
+quantile
+seq
+runif
+mean
+sd
+median
+IQR
+length
+arrange
+str_detect
+str_extract
+str_subset
+regex syntax: see Table 6.1 in coursebook
+str_split
+str_replace
+Sys.time
+unclass
+POSIXct
+POSIXlt
+unclass
+ymd
+dym
+ymd_hms
+wday
+year
+mday
+month
+pivot_longer
+case_when
+cor
+facet_grid
+aes(color = )
+aes(fill = )
+aes(shape =)
+as.factor
+levels
+
+
+
+
+

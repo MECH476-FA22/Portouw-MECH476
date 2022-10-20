@@ -18,9 +18,9 @@ Directory abbreviations: ~  .  ..  ../..
 ../.. - two directories up from the wd. can repeat as many times as necessary to keep going up.
 %>% pipe operator takes the object on the left side and places it into the first argument of the following funciton. Note: can be repeated, because piping sends the data frame from the previous step to the next function.
 getwd - will show the current working directory as a string
-sessionInfo
+sessionInfo - returns R version along with OS and attached or loaded packages.
 print - gives a character string and shows it invisibly, showing a text output for the user to read. is included in almost all functions. 
-paste - con catenates multiple character vectors together into one vector. can designate a spacing between, with sep = " " or "," etc. 
+paste - concatenates multiple character vectors together into one vector. can designate a spacing between, with sep = " " or "," etc. 
 paste0 - paste but assumes sep = "", or no spaces
 class - returns the class of object in quesiton. 
 length - returns the length of an object. If the assingment operator is used such as length(x) <- 5, the old vector changes its length to match the new value, either by dropping values or adding NA's to the new spaces.
@@ -42,7 +42,7 @@ vignette - get a large help file for a certain package
 glimpse - similar to print, but shows each column in a data frame descending so each column name can be read.
 mutate - add or subtract 
 rename - rename columns of a data frame. 
-select - only return desired rows. can either return a few named columns, or remove only a few columns with the - operatior. 
+select - only return desired columns. can either return a few named columns, or remove only a few columns with the - operatior. 
 filter - choose rows that fulfill the set logical expression. 
 slice - 
 slice_max - returns rows with highest values
