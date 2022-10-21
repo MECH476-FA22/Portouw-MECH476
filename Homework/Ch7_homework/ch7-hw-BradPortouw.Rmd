@@ -96,7 +96,8 @@ ggplot(data = ME_salaries, aes(y = age))+
   geom_boxplot(fill = "deeppink3")+
   ylab("Age")+
   ylim(20,80)+
-  ggtitle("Age of Mechanical Engineers")
+  ggtitle("Age of Mechanical Engineers")+
+  theme_linedraw()
 
 #Basic plot for salary distribution. Outlier exists at 1 million dollars, so range is reduced to make plot more readable. 
 ggplot(data = ME_salaries, aes(x= salary))+
@@ -207,7 +208,8 @@ sal_vs_age_facet <- ggplot(ME_salaries)+
                                                    suffix = 'k'))+
   ggtitle("Salary versus Age of Mechanical Engineers")+
   facet_grid(cols = vars(gender),
-                     labeller= label_both)
+                     labeller= label_both)+
+  theme_linedraw()
 sal_vs_age_facet
 
 # This plot is thowing an error of 
@@ -280,24 +282,30 @@ gen_ints$gender <- as.integer(ME_salaries$gender)
 F_sal <- gen_ints %>%
   dplyr::filter(gender == 1)
 
-F_quantile <- quantile(F_sal$salary,
-         probs= seq(0,1,0.1))%>%
-  round(0)
+F_quantile <- as.integer(quantile(F_sal$salary,
+         probs= seq(0,1,0.1)))%>%
+  round(0)#%>%
+  #format(scientific = FALSE)
 
 M_sal <- gen_ints %>%
   dplyr::filter(gender == 2)
 
-M_quantile <- quantile(M_sal$salary,
-                    probs=seq(0,1,0.1))%>%
-  round(0)
-med_diff <- M_quantile[6]-F_quantile[6]
-max_diff <- M_quantile[11]-F_quantile[11]
+M_quantile <- as.integer(quantile(M_sal$salary,
+                    probs=seq(0,1,0.1)))%>%
+  round(0)#%>%
+  #format(scientific = FALSE)
+#When I convert the quantile data frame to have its outputs not be in scientific notation the following objects throw an error: 
+
+med_diff <- (M_quantile[6]-F_quantile[6])#%>%
+  #format(scientific = FALSE)
+max_diff <- (M_quantile[11]-F_quantile[11])#%>%
+  #format(scientific = FALSE)
 ```
 
 What is the difference in salary between men and women at the median? 
 
-  * Median salary for women is $`r F_quant[6]`
-  * Median salary for men is $`r M_quant[6]`
+  * Median salary for women is $`r F_quantile[6]`
+  * Median salary for men is $`r M_quantile[6]`
   * The difference at the median is $`r med_diff` 
   
 At the top percentile (maximum)? 
