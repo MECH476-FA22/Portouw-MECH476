@@ -1,0 +1,283 @@
+---
+title: 'Engineering Data analysis in R Homework 8'
+subtitle: 'Chapter 8 Homework: Functional Programming' 
+author: 'Brad Portouw'
+date: '`r format(Sys.time(), "%d %B, %Y")`'
+output: pdf_document
+---
+
+```{r global-options, include=FALSE}
+# set global options for figures, code, warnings, and messages
+knitr::opts_chunk$set(fig.width=6, fig.height=4, fig.path="../figs/",
+                      echo=FALSE, warning=FALSE, message=FALSE)
+```
+
+# Load packages
+
+```{r load-packages, message=FALSE}
+# load packages for current session
+library(tidyverse) 
+library(lubridate)
+library(magrittr)
+library(gridExtra) # needed for extra credit question
+# Regex functions struggle unless working directory is set to the original R folder. 
+#Normally I work from the HW folder because that is where the Rmd is located.
+# in this case I am moving up 2 directories from Ch8_homework to Homework to Portouw-MECH 476
+setwd("../..")
+```
+
+# Chapter 8 Homework
+
+This homework will give you practice at writing functions, mapping functions, and cleaning/plotting data. 
+
+When a question asks you to make a plot, remember to set a theme, title, 
+subtitle, labels, colors, etc. It is up to you how to personalize your plots, 
+but put in some effort and make the plotting approach consistent throughout
+the document. For example, you could use the same theme for all plots. I also
+like to use the subtitle as a place for the main summary for the viewer.
+
+\newpage
+
+## Question 1
+
+Write a **function** named `sort_abs()`that takes a vector of numbers as input, calculates the absolute values of each entry, and then outputs that vector sorted from smallest to largest value. 
+
+```{r sort-baseR, include=FALSE}
+
+#create a function named `sort_abs()`
+sort_abs <- function(x, na.rm = TRUE){
+  if (na.rm == FALSE){
+  y <-abs(x)
+  z <- sort(y)
+  return(z)
+  }
+  else {
+    y <- abs(na.omit(x))
+    z <- sort(y)
+    return(z)
+  }
+}
+```
+
+## Question 2
+
+Modify the function `import.w.name()` to import the “date” part of the filename (in addition to the sensor ID). Create a new column variable called “date_created” with this information. Hint: you will need to apply a regex pattern like this: `"(?<=_)[:alnum:]+(?=\\.)"`
+
+```{r import.w.name2, include=FALSE}
+# create an object that tracks the file names and file paths
+# see the coursebook for details
+# copied from textbook ch 8.3.2
+setwd("../..")
+file_list <- list.files('./Data/purpleair/', full.names=TRUE)
+
+# modify the import.w.name function
+# hint: start with what is provided in the coursebook
+import.w.name <- function(pathname) {
+  #create a tibble by importing the 'pathname' file
+  df <- read_csv(pathname, col_names = TRUE)
+  df <- df %>%
+    # use stringr::str_extract & a regex to get sensor ID from file name
+    # regex translation: "look for a /, then extract all letters and numbers that follow until _"
+    #in this case I had to change the regex to look for "purpleair/" instead of "//" because i couldn't import the path name with the list.files exactly as it was shown in the chapter 8 example. 
+    mutate(sensor_ID = str_extract(pathname, 
+                                  "(?<=purpleair/)[:alnum:]+(?=_)")) %>%
+    #next extract the date from the file name and likely make it a date object.
+    mutate(date_created =
+      ymd(
+        str_extract(pathname,
+                                      "(?<=_)[:alnum:]+(?=\\.)")))%>%
+    # return only a few salient variables to the resultant data frame using dplyr::select
+    select(UTCDateTime, 
+           current_temp_f, 
+           current_humidity, 
+           pressure,
+           pm2_5_atm,
+           sensor_ID,
+           date_created) %>%
+    na.omit() # remove NA values, which happens when sensor goes offline
+  return(df)
+}
+
+PA_data_1 <- import.w.name(file_list[1])
+
+head(PA_data_1)
+
+```
+
+## Question 3
+This question is designed to give you practice at data cleaning. First, create a pipeline that (1) uses `purrr::map_dfr()` and `import.w.name()` to read in  all the the PurpleAir data files into a single data frame. Call that new data frame `PA_data_merged`. (2) Then, have the pipeline convert the character vector UTCDateTime into new column of class POSIXct using a `lubridate::` function (note - not all the indices in UTCDateTime will parse correctly; we will address this in Question 4). Finally, (3) finish the pipeline by renaming the `current_temp_f` and `current_humidity` column names to shorter names.
+
+```{r map-dplyr-pipe, warning=FALSE, message=FALSE, include=FALSE}
+# the map code is provided in the coursebook
+#going to set wd to two directories above so function works properly.
+setwd("../..")
+
+PA_data_merged <- map_dfr(file_list,
+                          import.w.name)%>%
+  mutate(UTCDateTime =
+    lubridate::ymd_hms(UTCDateTime))%>%
+  mutate(UTCDateTime = as.POSIXct(UTCDateTime))%>%
+  rename(temp_f = current_temp_f,
+         humid = current_humidity)
+glimpse(PA_data_merged)
+
+```
+
+## Question 4
+Can you find the 3 indices of UTCDateTime in PA_data_merged that failed to parse with lubridate::? Hint: use the `is.na()` function nested wihtin `which()` to return the row numbers in question. Both of these are baseR functions. Once you have the row entries identified you can `View()` them with a call to `slice()`.: normal entries in UTCDateTime are all the same number of characters nchar() or entries that failed to parse in the new date column will have NA associated with them.
+
+I'm assuming we are keeping these rows. 
+```{r find-NAs, include=FALSE}
+setwd("../..")
+
+NA_date_rows <- which(is.na(PA_data_merged))
+
+# from my understanding the question isn't asking for these rows to be removed, so I won't do that here. 
+
+View(slice(PA_data_merged, NA_date_rows))
+NA_date_rows
+```
+Rows 1132, 5274 and 5361 all have NA values for their UTC times.
+
+
+## Question 5
+Create a series of EDA plots (cdf, boxplot, histogram, time series) of the `pm2_5_atm` variable from `PA_data_merged`. Use `color =` or `fill =` as an aesthetic to differentiate each sensor by `sensor_ID`. Do the data have a central tendency? Do they appear normally distributed? Do events show up in the time series?  Note: the variable `pm2_5_atm` is the concentration of fine particulate matter air pollution in micrograms per cubic meter ($\mu g/m^3$).
+
+```{r plots, echo=FALSE}
+#going to make a cumulative fraction of the given pollution data.
+
+pol_conc <- PA_data_merged%>%
+  dplyr::group_by(sensor_ID)%>%
+  dplyr::select(sensor_ID,
+                 UTCDateTime,
+                 pm2_5_atm)
+
+
+ecdf <-ggplot(data = pol_conc,
+                   mapping = aes(x=pm2_5_atm,
+                       color = sensor_ID,
+                       y = pm2_5_atm))+
+  geom_step(stat = "ecdf")+
+  theme_bw()+
+  labs(title = "Cumulative Distributon of Air polluiton Concentration",
+       subtitle = "Concentration of fine particulate matter in micrograms per cubic meter",
+       x="Particulate matter micrograms per cubic meter",
+       y="Quantile")
+#Boxplot
+box <- ggplot(data = pol_conc,
+              mapping = aes(x= pm2_5_atm,
+                            color=sensor_ID,
+                            y = sensor_ID))+
+  geom_boxplot(outlier.alpha = 0.4)+
+  theme_bw()+
+  labs(title = "Air Pollution Concentraion",
+       subtitle = "Fine particulate matter in micrograms per cubic meter",
+       x = "Micrograms per Cubic Meter",
+       y = "Sensor ID")
+#Histogram
+hist <- ggplot(data=pol_conc,
+               mapping = (aes(x=pm2_5_atm,
+                           color = sensor_ID)))+
+  geom_histogram(fill ="white",
+                 position = "dodge",
+                 bins=40,
+                 alpha = 0.3)+
+  theme_bw()+
+  labs(title = "AIr Pollution Concentration",
+       subtitle = "Fine particulate matter in micrograms per cubic meter",
+       x = "Micrograms per Cubic Meter",
+       y = "Counts")
+#time series
+time <- ggplot(data = pol_conc,
+               mapping = aes(x=UTCDateTime,
+                             color = sensor_ID,
+                             y = pm2_5_atm))+
+  geom_jitter(alpha = 0.3,
+              size = 0.5)+
+  theme_bw()+
+    labs(title = "AIr Pollution Concentration",
+       subtitle = "Fine particulate matter in micrograms per cubic meter at given dates",
+       x = "Date",
+       y = "Micrograms per Cubic Meter")
+
+ecdf
+box
+hist
+time
+```
+
+
+### Extra Credit
+Create the EDA figures within a single plot (hint: use the `gridExtra::` package).  Show only one legend and place it within the body of the CDF plot (hint: to move or remove a legend, add a call that uses a version of `theme(legend.position = ...)`).
+
+```{r PA-EDA-plots, echo=FALSE, message=FALSE, warning=FALSE}
+library("gridExtra")
+#cdf plot
+
+
+ecdf <-ggplot(data = pol_conc,
+                   mapping = aes(x=pm2_5_atm,
+                       color = sensor_ID,
+                       y = pm2_5_atm))+
+  geom_step(stat = "ecdf")+
+  theme_bw()+
+  theme(legend.position = "none",
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank())
+
+
+#boxplot
+box <- ggplot(data = pol_conc,
+              mapping = aes(x= pm2_5_atm,
+                            color=sensor_ID,
+                            y = sensor_ID))+
+  geom_boxplot(outlier.alpha = 0.4)+
+  theme_bw()+
+  theme(legend.position = "none")
+
+#time-series plot
+time <- ggplot(data = pol_conc,
+               mapping = aes(x=UTCDateTime,
+                             color = sensor_ID,
+                             y = pm2_5_atm))+
+  geom_jitter(alpha = 0.3,
+              size = 0.5)+
+  theme_bw()+
+  theme(legend.position = "none")
+
+#histogram
+hist <- ggplot(data=pol_conc,
+               mapping = (aes(x=pm2_5_atm,
+                           color = sensor_ID)))+
+  geom_histogram(fill ="white",
+                 position = "dodge",
+                 bins=40,
+                 alpha = 0.3)+
+  theme_bw()+
+  theme(legend.position = "none",)
+
+all_plots2 <- gridExtra::grid.arrange(ecdf,
+                              box,
+                              hist,
+                              time,
+                              widths=c(0.2,1,0.2),
+layout_matrix= rbind(c(NA,1,NA),
+                     c(NA,1,NA),
+                     c(NA,2,NA),
+                     c(NA,2,NA),
+                     c(NA,3,NA),
+                     c(NA,3,NA),
+                     c(NA,4,NA),
+                     c(NA,4,NA)))
+
+
+#Combining each into one plot object:
+#all_plots <- grid.arrange(ecdf,
+ #                         box,
+  #                        time,
+   #                       hist,
+    #                      layout_matrix = matrix(c(1,1,2,2,2,3,3,4,4,NA),
+                                                 #byrow = TRUE,
+  #                        ncol=5))
+#all_plots
+```
