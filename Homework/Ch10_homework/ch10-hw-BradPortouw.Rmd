@@ -64,20 +64,29 @@ blanks <- read.csv('AIRLIFT_mass_repeatability.csv')%>%
   2d. Over how long of a period were these blank measurements made? Hint: this can be done in base R with a `max() - min()` or with `lubridate::interval() %>% as.duration()`.
 ```{r unique-IDs}
 #Taking the sum of the is.na.data.frame in order to count any na's that occur in the data frame. 
-sum(is.na.data.frame(blanks))
+num_na <- sum(is.na.data.frame(blanks))
 
 #
 x<-unique(blanks$id)
-x
 
 #counting the number of samples for each filter ID
 dplyr::count(blanks, id)
 
 #Period of time the measurements were made:
 meas_days <- max(blanks$date)-min(blanks$date) 
-meas_days
+
 
 ```
+Seemingly there are no NA entries for the blanks data frame. The data from the raw airlift_mass_repeatability.csv did have many columns with NA's present, however those columns were removed for this data analysis.
+
+The vector x, lists all the unique id's for the different sensors used with 5 sensors total being:
+
+41666, 41667, 41668, 41669, 41671
+
+. Line 73 counts the number of data points for each sensor, placing them in the data frame above. Four sensors have 78 datapoints, with sensor 41669 having 76.
+
+The sensors measured data over the course of 35 days, as shown in the variable meas_days. 
+
 
 ## Question 3
 
@@ -105,4 +114,4 @@ LOD <- by_id%>%
 
 LOD
 ```
-
+Above is a tibble with the limits of detection for each Sensor, all in mg. 
