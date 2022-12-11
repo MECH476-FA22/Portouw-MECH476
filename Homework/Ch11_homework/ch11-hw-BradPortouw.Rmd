@@ -1,7 +1,7 @@
 ---
 title: 'MECH481A6: Engineering Data Analysis in R'
 subtitle: 'Chapter 11 Homework: Modeling' 
-author: 'Student Name'
+author: 'Brad Portouw'
 date: '`r format(Sys.time(), "%d %B, %Y")`'
 output: pdf_document
 ---
@@ -41,30 +41,103 @@ Evaluate assumption 3 about whether there is collinearity among these variables.
 
 
 ```{r ch11-homework-q1, echo=FALSE, include=FALSE}
+# left copy of bodysize csv in same folder as Rmd.
 
+bodySize <- read.csv('./bodysize.csv')
+
+model1 <- lm(bodySize$height ~ bodySize$waist)
+
+model2 <- lm(bodySize$height~bodySize$mass)
+
+model3 <- lm(bodySize$height ~ bodySize$waist+bodySize$mass)
 ```
+
+model1 is a linear model with waist size (circumference in cm) as the independent variable and height (cm) as the dependent variable with coefficients of:
+
+Intercept: 155.5, slope: 0.11
+
+model2 is a linear model with mass (kg) as the independent variable and height as the dependent variable with coefficients of:
+
+Intercept: 150.6 slope: 0.191
+
+model3 combines the predictor variables of mass and waist circumference into one independent variable and their relationship to height with the coefficients being: 
+
+Intercept: 177.46 
+waist: -0.634
+mass: 0.639
+
+Here the coefficients seemingly cancel each other out, and are greater in magnitude than in models 1 and 2. This would suggest that waist size and mass are colinear. This becomes a problem becuase it is difficlut to determine which value is the determining factor for height as taller people both likely weigh more and have larger waist sizes, but both values can vary because higher waist sizes are also likely correlated with greater mass. 
+
+It may be hard to use model 3 as the two predictor variables. The coefficients given are not useful in this case unfortunately. However it may give a potentially accurate answer. Depending upon the need for either coefficients or just outputs, the model may be vaild or unusable. 
 
 ## Question 2
 Create a new variable in the `bodysize` data frame using `dplyr::mutate`. Call this variable `volume` and make it equal to $waist^2*height$.  Use this new variable to predict `mass`.  
 
 ```{r ch11-homework-q2}
+bodySize <-bodySize %>%
+  mutate(volume = (((pi/4)*(waist/pi)^2)*height))
+# note: converting from cm^2 to m^2.
+model4 <- lm(bodySize$mass ~ bodySize$volume)
 
-
-
-
+  
 ```
+The waist value is the waist circumference of the individuals recorded, which is diameter of an individual times pi assuming a perfect circle. In this case, the area of a circle is (pi/4)*d^2, meaning if the circumference is substituted the diameter will become (circumference/pi) or (waist/pi). 
+
+Model 4, gives coefficients depending upon the calculated volume of each individual with:
+
+Intercept: 25.46 kg
+Coefficient B1: 4.135*10^-4
+
+This would translate to:
+
+(Mass in kg)= 25.46kg + (4.135*10^-4)(Volume in cm3)
+
+
 
 Does this variable explain more of the variance in `mass` from the NHANES data? How do you know? (hint: there is both *process* and *quantitative* proof here)
 
 ```{r ch11-homework-q2a}
-
+lm_massHeight <-lm(bodySize$mass~bodySize$height)
+lm_massWaist <-lm(bodySize$mass~bodySize$waist)
+summary(lm_massHeight)
+summary(lm_massWaist)
+summary(model4)
 
 ```
+Initially looking at the summaries of the linear models made for comparing mass to height and mass to waist circumference, the R squared values are:
+
+mass-height R2: 0.1903
+
+mass-waist  R2: 0.8025
+
+mass-volume R2: 0.8774
+
+These R-square values suggest that height isn't a great predictor of mass while waist size may have a greater correlation for determining mass. The volume model has a considerably larger R-squared compared to waist size, suggesting that including the height variable helps explain more of the variance in values observed for mass. 
+
+When determining mass from a person's geometry, we would multiply the volume of a person by their density. Volume of a cylinder is determined by the cross sectional area (found from waist), times the height. With the area being a squared value, it makes sense that its value would carry more weight in determining volume overall versus height. This may be explained by a  tall skinny person having lower mass than a shorter person who is more round.
+
+Volume = (pi/4)(d^2)(height)
+
+Overall model 4 likely is a better model than using either height or waist size for determining mass as it is probably more correctly specified
+
+
 
 Create a scatterplot of `mass` vs. `volume` to examine the fit.  Draw a fit line using `geom_smooth()`.
 
 ```{r ch11-homework-q2b}
-
+bodySize%>%
+  ggplot(aes(x=volume,
+             y=mass))+
+  geom_point()+
+  labs(title = 'Volume vs mass',
+       x= 'Volume in Cubic Centimeters (cm^3)',
+       y = 'Mass in kg')+
+  theme_grey(base_size = 13)+
+  geom_smooth(data = bodySize,
+              aes(x = volume, y = mass),
+              method = "lm",
+              formula = "y ~ x",
+              color = "blue")
 
 ```
 
@@ -72,32 +145,62 @@ Create a scatterplot of `mass` vs. `volume` to examine the fit.  Draw a fit line
 Load the `cal_aod.csv` data file and fit a linear model with `aeronet` as the independent variable and `AMOD` as the independent variable. 
 ```{r ch11-homework-q3}
 # load data
+cal_aod <- read.csv('./cal_aod.csv')
 
-
+model_aod <- lm(cal_aod$amod~cal_aod$aeronet)
 ```
 
 Evaluate model assumptions 4-7 from the coursebook.  Are all these assumptions valid? 
 
 ```{r ch11-homework-q3a}
 #assumption 4: mean of residuals is zero
-
+res_mean <- mean(model_aod$residuals)
 
 ```
+
+Assumption 4 wants to see if the mean of the residuals is equal to zero. In this case the variable res_mean returns a number to the -18th power, which is very small and is essentially zero. Here It can be said  it passes assumption 4.
 
 ```{r ch11-homework-q3b}
 #assumption 5: residuals are normally distributed
+#using a geom_gg plot to see if the quantiles of the data are normally distributed.
 
-
+p5<-ggplot(model_aod$model, aes(sample= 
+                                model_aod$residuals))+
+  geom_qq(alpha = 0.25,
+          color = "maroon4") +
+  geom_qq_line(color = "black") +
+  coord_cartesian(xlim = c(-2,2),
+                  ylim = c(-0.05,0.11))+
+  #ylim(-0.05,0.11)+
+  #xlim(-2,2)+
+  ggtitle("Model AOD: Aeronet ~ AMOD") +
+  theme_classic()
+p5
 ```
+Looking at plot p5, the majority of the datapoints fall under what would be expected for a normal distribution, however some points on the extreme ends deviate, especially towards the right end. I will likely say that this is acceptable for assumption 5 and say generally the residuals are normally distributed, but it definitely could fit the distributon better, and could use a second look potentially taking into account other factors. 
 
 ```{r ch11-homework-q3c}
 #assumption 6: the error term is homoscedastic
-
-
+p6 <- ggplot(data = model_aod$model) + 
+  geom_point(aes(x = model_aod$fitted.values, y =model_aod$residuals),
+             alpha = 0.25,
+             color = "maroon3") +
+  geom_hline(yintercept = 0) +
+  #coord_cartesian(xlim = c(0,1.6),
+  #                ylim = c(-0.2,0.2))+
+  theme_classic() +
+  theme(aspect.ratio = 0.5)
+p6
 ```
 
+The residuals seemingly do not change much with different values of AMOD, however two points are interesting. First around an AMOD of 1.1, there exists a value much greater than the others which reside near zero. It is possible that this point is an outlier, but it isn't clear for now. Just to the left of this point there are a grouping of points that have higher variance in their residuals than the other values on the plot. This may combine with the outlier point to suggest that near values of 1.0 to 1.2, more variance in AMOD occurs. Overall I may say that the majority of the distribution of residuals are homoscedastic, but in the 1.0 to 1.2 range the behavior is suspect. Hopefully more data could be found to increase the sample size. 
+
+ 
 ```{r ch11-homework-q3d}
 #assumption 7: no autocorrelation among residuals
 
-
+stats::pacf(model_aod$residuals, 
+            main = "Model Aod Partial Autocorrelation Plot")
 ```
+
+Looking at the autocorrelation plot all values seemingly fall within the bounds, meaning that there is a good chance there is no autocorrelation umong the residuals  taking place, therefore I may say that assumption 7 is valid. 
